@@ -4,4 +4,4 @@ Our vision for our Raspberry Pi expression game project is to create an engaging
 # contributors
 - Cappillen Lee (cappillen@ucsb.edu)
 - Gretchen Lam (gretchenlam@ucsb.edu)
-- Johnson Chan  (c_chan@ucsb.edu)
+- Johnson Chan (c_chan@ucsb.edu)
