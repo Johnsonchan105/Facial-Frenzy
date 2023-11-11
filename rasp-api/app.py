@@ -16,7 +16,15 @@ if __name__ == "__main__":
         dotenv.load_dotenv()
         myname = os.environ.get("ME")
     
+    # import app db, models, and routes
+    from db import db_session, init_db
+    from models import *
     import routes
+
+    #ask flask to shutdown the DB upon exit
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
 
     #start the server app
     main()
