@@ -63,7 +63,7 @@ class FaceRecognition:
                     best_match_index = np.argmin(face_distances)
 
                     if matches[best_match_index]:
-                        name = self.known_face_names[best_match_index]
+                        name = self.known_face_names[best_match_index].split('.')[0]
                         confidence = face_confidence(face_distances[best_match_index])
 
                     self.face_names.append(f'{name} ({confidence})')
