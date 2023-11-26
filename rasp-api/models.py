@@ -13,8 +13,14 @@ class Players(Base):
     user_id = Column(Integer, primary_key=True) #automatically serial (auto-assigned, incremented value) with primary_key
     name = Column(String(50), nullable=False, unique=False)
     gamertag = Column(String(50), nullable=False, unique=True)
-    password = Column(String(100), nullable=False)
+    wins = Column(Integer, default=0, nullable=False)
     created_on = Column(DateTime, nullable=False, server_default=func.now()) 
     last_login = Column(DateTime, onupdate=func.now())
     def check_password(self, pwd):
         return sha256_crypt.verify(pwd, self.password)
+    
+class Facial(Base):
+    __tablename__ = 'facials'
+    id = Column(Integer, primary_key=True) #automatically serial (auto-assigned, incremented value) with primary_key
+    user_id = Column('user_id', Integer, ForeignKey('players.user_id'), nullable=False)
+    img_path = Column('img_path', String(50), nullable=False) 
