@@ -23,11 +23,21 @@ def getplayer():
     '''
     This route returns the player object in the db given a name, gamertag, or id
     '''
-    params = request.json
+    # parse params
+    params = None
+    if request.args:
+        params = request.args
+    elif request.json: 
+        params = request.json
+    elif request.form: 
+        params = request.form
+
+    # extract param values
     name = params.get('name', None)
     gamertag = params.get('gamertag', None)
     user_id = params.get('user_id', None)
 
+    # get player from db
     try:
         if name:
             player = utils.get_player_by_name_from_db(name)
