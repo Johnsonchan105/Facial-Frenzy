@@ -37,8 +37,6 @@ def getplayer():
     gamertag = params.get('gamertag', None)
     user_id = params.get('user_id', None)
 
-    print(name, gamertag, user_id)
-
     # get player from db
     try:
         player = None
@@ -54,6 +52,36 @@ def getplayer():
                 name=player.name,
                 gamertag=player.gamertag,
                 wins=player.wins), 200
+    except Exception as e:
+        print(f"Exception in postlog: {e}")
+        return {'MESSAGE': f"Exception in /api/getplayer {e}"}, 401 
+    
+@app.route('/api/createplayer')
+def createplayer():
+    '''
+    This route returns the player object in the db given a name, gamertag, or id
+    '''
+    # parse params
+    params = None
+    if request.args:
+        params = request.args
+    elif request.json: 
+        params = request.json
+    elif request.form: 
+        params = request.form
+
+    # extract param values
+    name = params.get('name', None)
+    gamertag = params.get('gamertag', None)
+
+    # add player from db
+    try:        
+        if name and gamertag:
+            utils.add_player_to_db(name, gamertag)
+        else:
+            return {'MESSAGE': 'Missing arguments'}, 401
+        
+        return {'MESSAGE': 'Successfully added player'}, 200
     except Exception as e:
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/getplayer {e}"}, 401 
