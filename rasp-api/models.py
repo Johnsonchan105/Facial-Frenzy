@@ -18,6 +18,9 @@ class Players(Base):
     last_login = Column(DateTime, onupdate=func.now())
     def check_password(self, pwd):
         return sha256_crypt.verify(pwd, self.password)
+    def __repr__(self):
+        return f"Player(id={self.user_id!r}, username={self.gamertag!r}, wins={self.wins!r})"
+
     
 class Facial(Base):
     __tablename__ = 'facials'

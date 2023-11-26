@@ -53,7 +53,7 @@ def getplayer():
                 id=player.user_id,
                 name=player.name,
                 gamertag=player.gamertag,
-                wins=gamertag.wins), 200
+                wins=player.wins), 200
     except Exception as e:
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/getplayer {e}"}, 401 
