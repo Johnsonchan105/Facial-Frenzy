@@ -18,10 +18,10 @@ def hello():
     '''
     return f'Welcome to CS190B Sensors Hub from {myname}\n', 200
 
-@app.route('/api/getplayer')
+@app.route('/api/getplayer', methods=['GET'])
 def getplayer():
     '''
-    This route returns the player object in the db given a name, gamertag, or id
+    This route returns the player object in the db given a name, gamertag, or id.
     '''
     # parse params
     params = None
@@ -46,7 +46,7 @@ def getplayer():
             player = utils.get_player_by_tag_from_db(gamertag)
         elif user_id:
             player = utils.get_player_by_id_from_db(user_id)
-        print(player)
+
         return jsonify(
                 id=player.user_id,
                 name=player.name,
@@ -56,10 +56,10 @@ def getplayer():
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/getplayer {e}"}, 401 
     
-@app.route('/api/createplayer')
+@app.route('/api/createplayer', methods=['GET'])
 def createplayer():
     '''
-    This route returns the player object in the db given a name, gamertag, or id
+    This route creates a new player object in the db.
     '''
     # parse params
     params = None
@@ -84,4 +84,31 @@ def createplayer():
         return {'MESSAGE': 'Successfully added player'}, 200
     except Exception as e:
         print(f"Exception in postlog: {e}")
-        return {'MESSAGE': f"Exception in /api/getplayer {e}"}, 401 
+        return {'MESSAGE': f"Exception in /api/createplayer {e}"}, 401 
+    
+@app.route('/api/updatescore', methods=['POST'])
+def updatescore():
+    '''
+    This route updates a player's win count in the db.
+    Requires user_id.
+    '''
+     # parse params
+    params = None
+    if request.args:
+        params = request.args
+    elif request.json: 
+        params = request.json
+    elif request.form: 
+        params = request.form
+
+    user_id = params.get('user_id', None)
+    if not user_id:
+        return {'MESSAGE': 'Missing arguments'}, 401
+    try:
+        if user_id:
+            utils.update_player_score(user_id)
+        return {'MESSAGE': f"Successfully updated player score"}, 200 
+    except Exception as e:
+        print(f"Exception in postlog: {e}")
+        return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
+
