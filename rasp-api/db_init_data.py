@@ -1,5 +1,5 @@
 players_list = [
-    ('Johnson Chang', 'janch', 'cats'),
-    ('Gretchan Ham', 'granch', 'hayday'), 
-    ('Capper Lee', 'capper', 'taytay'),
+    ('Johno', 'janch', 'cats'),
+    ('Gretchen', 'granch', 'hayday'), 
+    ('Cap', 'capper', 'taytay'),
 ]
