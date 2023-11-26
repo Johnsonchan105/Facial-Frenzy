@@ -37,15 +37,18 @@ def getplayer():
     gamertag = params.get('gamertag', None)
     user_id = params.get('user_id', None)
 
+    print(name, gamertag, user_id)
+
     # get player from db
     try:
+        player = None
         if name:
             player = utils.get_player_by_name_from_db(name)
         elif gamertag:
             player = utils.get_player_by_tag_from_db(gamertag)
         elif user_id:
             player = utils.get_player_by_id_from_db(user_id)
-
+        print(player)
         return jsonify(
                 id=player.user_id,
                 name=player.name,

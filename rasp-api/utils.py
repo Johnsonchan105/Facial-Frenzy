@@ -33,7 +33,7 @@ def get_player_by_id_from_db(uid):
 def add_player_to_db(name, gamertag):
     obj = None
     try:
-        obj = get_player_from_db(gamertag)
+        obj = get_player_by_tag_from_db(gamertag)
         if not obj:
             obj= Players(
                 name=name,
