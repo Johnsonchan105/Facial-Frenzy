@@ -27,16 +27,14 @@ def get_player_from_db(gamertag):
 def get_player_by_id_from_db(uid):
     return db_session.query(Players).filter(Players.user_id == uid).one_or_none()
 
-def add_player_to_db(name, gamertag, pwd):
+def add_player_to_db(name, gamertag):
     obj = None
     try:
         obj = get_player_from_db(gamertag)
         if not obj:
-            pwdhash = sha256_crypt.hash(pwd)
             obj= Players(
                 name=name,
-                gamertag=gamertag,
-                password=pwdhash
+                gamertag=gamertag
             )
             db_session.add(obj)
             db_session.commit()
@@ -48,7 +46,7 @@ def add_player_to_db(name, gamertag, pwd):
 
 def add_players_in_list_to_db(plist):
     for player in plist:
-        add_player_to_db(player[0], player[1], player[2])
+        add_player_to_db(player[0], player[1])
 
 '''
 helper functions for dropbox
