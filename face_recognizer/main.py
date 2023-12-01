@@ -66,6 +66,13 @@ class FaceRecognition:
                         name = self.known_face_names[best_match_index].split('_')[0]
                         confidence = face_confidence(face_distances[best_match_index])
 
+                    if confidence != 'Unknown':
+                        confidenceNum = float(confidence.split('%')[0])
+
+                    if confidenceNum < 97 or confidence == 'Unknown':
+                        name = 'Unknown'
+                        confidence = 'Unknown'
+
                     self.face_names.append(f'{name} ({confidence})')
             
             self.process_current_frame = not self.process_current_frame
