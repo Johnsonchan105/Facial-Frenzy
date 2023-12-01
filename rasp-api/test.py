@@ -18,7 +18,6 @@ import tempfile
 cred = credentials.Certificate("./service-account.json")
 firebase_admin.initialize_app(cred,{'storageBucket': 'facial-frenzy.appspot.com'})
 
-
 url = 'http://localhost:8000'
 
 dotenv.load_dotenv() #set the environment variables from .env file
@@ -56,48 +55,30 @@ def updatescore():
 
     content = res.json()
     print(content, res.status_code)
-    
-def upload_image_to_firebase(image_path, destination_path):
-    try:
-        # init bucket obj
 
-        buc = bucket()
-        blob = buc.blob(destination_path)
-        blob.upload_from_filename(image_path)
+def postface():
+    print('TEST: POST PLAYER IMAGE')
 
-    except AuthError as e:
-        print(f"Error: {e}")
-    except ApiError as e:
-        print(f"API Error: {e}")
+    path = '/api/postface/1'
+    endpoint = url + path
 
-def download_image_from_firebase(source_path):
-    try:
-        # init dropbox cli
+    img = Image.open('./data/johno1.png')
 
-        buc = bucket()
-        blob = buc.blob(source_path)
-        image_data = blob.download_as_string()
+    files = { 'face': open('./data/johno1.png', 'rb') }
 
-        # return img
-        return Image.open(BytesIO(image_data))
-    except AuthError as e:
-        print(f"Error: {e}")
-    except ApiError as e:
-        print(f"API Error: {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    headers = {'content-type': 'image/png'}
+
+    res = requests.post(endpoint, data={'expression': 'hi'}, files=files)
+
+    content = res.json()
+    print(content, res.status_code)
 
 
 if __name__ == "__main__":
     # getplayer()
     # createplayer()
     # updatescore()
-    id = str(uuid.uuid4().hex)[:8]
-    img = Image.open('./data/johno1.png')
-    img.save(f'{id}.{img.format}')
-    upload_image_to_firebase(f'{id}.{img.format}', f'faces/1/{id}')
-    image = download_image_from_firebase(f'faces/1/{id}')
-    image.show()
-    os.remove(f'{id}.{img.format}')
+    postface()
+    
 
     

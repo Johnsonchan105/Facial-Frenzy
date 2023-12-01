@@ -3,6 +3,7 @@ import sys, os
 from datetime import timedelta, datetime, timezone
 from flask import request, jsonify
 import utils
+import uuid
 #import the flask-jwt-extended interface in the parent directory
 sys.path.append(os.path.join(os.path.dirname(__file__), '.', 'flask-jwt-extended'))
 
@@ -112,29 +113,25 @@ def updatescore():
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
 
-@app.route('/api/addphoto', methods=['POST'])
-def addphoto():
+@app.route('/api/postface/<int:user_id>', methods=['POST'])
+def postface(user_id):
     '''
     This route adds a photo for a user.
     Requires user_id.
     '''
-     # parse params
-    params = None
-    if request.args:
-        params = request.args
-    elif request.json: 
-        params = request.json
-    elif request.form: 
-        params = request.form
+    
+    if 'face' not in request.files:
+        return {'MESSAGE': 'Missing image'}, 401
+    else:
+        file = request.files['face']
+        print(file)
 
-    user_id = params.get('user_id', None)
-
-    if not user_id:
-        return {'MESSAGE': 'Missing arguments'}, 401
     try:
-        if user_id:
-            utils.update_player_score(user_id)
-        return {'MESSAGE': f"Successfully updated player score"}, 200 
+        id = str(uuid.uuid4().hex)[:8]
+        utils.upload_image_to_firebase(file, f'faces/{user_id}/{id}')
+        
+        return {'MESSAGE': f"Successfully uploaded player image"}, 200 
+        
     except Exception as e:
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 

@@ -64,7 +64,44 @@ from firebase_admin.storage import bucket
 cred = credentials.Certificate("./service-account.json")
 firebase_admin.initialize_app(cred,{'storageBucket': 'facial-frenzy.appspot.com'})
 
-def upload_image_to_firebase(image_path, destination_path):
+def upload_image_to_firebase(image_file, destination_path):
+    '''
+    Example Usage:
+    ```
+    id = str(uuid.uuid4().hex)[:8]
+    img = Image.open('./data/johno1.png')
+    img.save(f'{id}.{img.format}')
+    upload_image_to_firebase(f'{id}.{img.format}', f'faces/1/{id}')
+    image = download_image_from_firebase(f'faces/1/{id}')
+    image.show()
+    os.remove(f'{id}.{img.format}')
+    ```
+    '''
+    try:
+        # init bucket obj
+
+        buc = bucket()
+        blob = buc.blob(destination_path)
+        blob.upload_from_file(image_file)
+
+    except AuthError as e:
+        print(f"Error: {e}")
+    except ApiError as e:
+        print(f"API Error: {e}")
+
+def upload_image_path_to_firebase(image_path, destination_path):
+    '''
+    Example Usage:
+    ```
+    id = str(uuid.uuid4().hex)[:8]
+    img = Image.open('./data/johno1.png')
+    img.save(f'{id}.{img.format}')
+    upload_image_to_firebase(f'{id}.{img.format}', f'faces/1/{id}')
+    image = download_image_from_firebase(f'faces/1/{id}')
+    image.show()
+    os.remove(f'{id}.{img.format}')
+    ```
+    '''
     try:
         # init bucket obj
 
@@ -78,8 +115,20 @@ def upload_image_to_firebase(image_path, destination_path):
         print(f"API Error: {e}")
 
 def download_image_from_firebase(source_path):
+    '''
+    Example Usage:
+    ```
+    id = str(uuid.uuid4().hex)[:8]
+    img = Image.open('./data/johno1.png')
+    img.save(f'{id}.{img.format}')
+    upload_image_to_firebase(f'{id}.{img.format}', f'faces/1/{id}')
+    image = download_image_from_firebase(f'faces/1/{id}')
+    image.show()
+    os.remove(f'{id}.{img.format}')
+    ```
+    '''
     try:
-        # init bucket obj
+        # init dropbox cli
 
         buc = bucket()
         blob = buc.blob(source_path)
