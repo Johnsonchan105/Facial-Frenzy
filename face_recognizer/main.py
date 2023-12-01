@@ -24,6 +24,8 @@ class FaceRecognition:
     process_current_frame = True
 
     def __init__(self):
+        if not os.path.exists('faces'):
+            os.makedirs('faces')
         self.encode_faces()
 
     def encode_faces(self):
@@ -33,7 +35,6 @@ class FaceRecognition:
 
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
-
 
     def update_known_faces(self, user_name, frame):
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
