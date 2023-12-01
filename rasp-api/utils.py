@@ -21,16 +21,24 @@ helper functions for db
 def _compile_drop_table(element, compiler, **kwargs):
     return compiler.visit_drop_table(element) + " CASCADE"
 
-def get_player_from_db(gamertag):
+def get_player_by_tag_from_db(gamertag):
     return db_session.query(Players).filter(Players.gamertag == gamertag).one_or_none()
+
+def get_player_by_name_from_db(name):
+    return db_session.query(Players).filter(Players.name == name).one_or_none()
 
 def get_player_by_id_from_db(uid):
     return db_session.query(Players).filter(Players.user_id == uid).one_or_none()
 
+def update_player_score(uid):
+    player = get_player_by_id_from_db(uid)
+    player.wins += 1
+    db_session.commit()
+    
 def add_player_to_db(name, gamertag):
     obj = None
     try:
-        obj = get_player_from_db(gamertag)
+        obj = get_player_by_tag_from_db(gamertag)
         if not obj:
             obj= Players(
                 name=name,
