@@ -45,11 +45,11 @@ class FaceRecognition:
         text = ""
         while True:
             key = cv2.waitKey(1) & 0xFF
-            if key == 13: 
+            if key == 13: # enter
                 break
-            elif key == 8 or key == 127:
+            elif key == 8 or key == 127: # backspace or delete
                 text = text[:-1]
-            elif key >= 32 and key <= 126: 
+            elif key >= 32 and key <= 126: # valid chars
                 text += chr(key)
 
             input_frame = frame.copy()
@@ -134,8 +134,9 @@ class FaceRecognition:
                 if ret:
                     user_name = self.text_input_box(frame_to_save, "Enter your name: ")
                     if user_name:
+                        user_name = user_name + "_"
                         existing_count = sum(name.startswith(f'{user_name}') for name in self.known_face_names) + 1
-                        cv2.imwrite(f'faces/{user_name}_{existing_count}.png', frame_to_save)
+                        cv2.imwrite(f'faces/{user_name}{existing_count}.png', frame_to_save)
                         self.update_known_faces(user_name, frame_to_save)
 
         
