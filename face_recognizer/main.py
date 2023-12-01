@@ -24,6 +24,8 @@ class FaceRecognition:
     process_current_frame = True
 
     def __init__(self):
+        if not os.path.exists('faces'):
+            os.makedirs('faces')
         self.encode_faces()
 
     def encode_faces(self):
@@ -33,8 +35,6 @@ class FaceRecognition:
 
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
-
-        print(self.known_face_names)
 
     def update_known_faces(self, user_name, frame):
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -46,11 +46,11 @@ class FaceRecognition:
         text = ""
         while True:
             key = cv2.waitKey(1) & 0xFF
-            if key == 13: 
+            if key == 13: # enter
                 break
-            elif key == 8 or key == 127:
+            elif key == 8 or key == 127: # backspace or delete
                 text = text[:-1]
-            elif key >= 32 and key <= 126: 
+            elif key >= 32 and key <= 126: # valid chars
                 text += chr(key)
 
             input_frame = frame.copy()
@@ -123,7 +123,7 @@ class FaceRecognition:
                 cv2.putText(frame, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
 
             if unknown_face_detected:
-                cv2.putText(frame, "Press 'c' to capture your face", (50, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.putText(frame, "Press 'c' to capture your face", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
 
             cv2.imshow('Face Recognition', frame)
 
@@ -135,7 +135,9 @@ class FaceRecognition:
                 if ret:
                     user_name = self.text_input_box(frame_to_save, "Enter your name: ")
                     if user_name:
-                        cv2.imwrite(f'faces/{user_name}.png', frame_to_save)
+                        user_name = user_name + "_"
+                        existing_count = sum(name.startswith(f'{user_name}') for name in self.known_face_names) + 1
+                        cv2.imwrite(f'faces/{user_name}{existing_count}.png', frame_to_save)
                         self.update_known_faces(user_name, frame_to_save)
 
         
