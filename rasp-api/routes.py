@@ -54,9 +54,9 @@ def getplayer():
                 wins=player.wins), 200
     except Exception as e:
         print(f"Exception in postlog: {e}")
-        return {'MESSAGE': f"Exception in /api/getplayer {e}"}, 401 
+        return jsonify({'MESSAGE': f"Exception in /api/getplayer {e}"}), 401 
     
-@app.route('/api/createplayer', methods=['GET'])
+@app.route('/api/createplayer', methods=['POST'])
 def createplayer():
     '''
     This route creates a new player object in the db.
@@ -112,3 +112,29 @@ def updatescore():
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
 
+@app.route('/api/addphoto', methods=['POST'])
+def updatescore():
+    '''
+    This route adds a photo for a user.
+    Requires user_id.
+    '''
+     # parse params
+    params = None
+    if request.args:
+        params = request.args
+    elif request.json: 
+        params = request.json
+    elif request.form: 
+        params = request.form
+
+    user_id = params.get('user_id', None)
+
+    if not user_id:
+        return {'MESSAGE': 'Missing arguments'}, 401
+    try:
+        if user_id:
+            utils.update_player_score(user_id)
+        return {'MESSAGE': f"Successfully updated player score"}, 200 
+    except Exception as e:
+        print(f"Exception in postlog: {e}")
+        return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
