@@ -34,7 +34,6 @@ class FaceRecognition:
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
 
-        print(self.known_face_names)
 
     def update_known_faces(self, user_name, frame):
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -135,7 +134,8 @@ class FaceRecognition:
                 if ret:
                     user_name = self.text_input_box(frame_to_save, "Enter your name: ")
                     if user_name:
-                        cv2.imwrite(f'faces/{user_name}.png', frame_to_save)
+                        existing_count = sum(name.startswith(f'{user_name}') for name in self.known_face_names) + 1
+                        cv2.imwrite(f'faces/{user_name}_{existing_count}.png', frame_to_save)
                         self.update_known_faces(user_name, frame_to_save)
 
         
