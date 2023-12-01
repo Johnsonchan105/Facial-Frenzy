@@ -56,33 +56,34 @@ def add_players_in_list_to_db(plist):
     for player in plist:
         add_player_to_db(player[0], player[1])
 
-'''
-helper functions for dropbox
-'''
-DROPBOX_ACCESS_TOKEN = os.environ.get("DROPBOX_APP_ACCESS_TOKEN")
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin.storage import bucket
 
-def upload_image_to_dropbox(image_path, destination_path):
+# init the firebase admin
+cred = credentials.Certificate("./service-account.json")
+firebase_admin.initialize_app(cred,{'storageBucket': 'facial-frenzy.appspot.com'})
+
+def upload_image_to_firebase(image_path, destination_path):
     try:
-        # init dropbox cli
-        dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
+        # init bucket obj
 
-        with open(image_path, 'rb') as f:
-            dbx.files_upload(f.read(), destination_path)
-
-        print(f"Image '{image_path}' uploaded to Dropbox at '{destination_path}'")
+        buc = bucket()
+        blob = buc.blob(destination_path)
+        blob.upload_from_filename(image_path)
 
     except AuthError as e:
         print(f"Error: {e}")
     except ApiError as e:
         print(f"API Error: {e}")
 
-def download_image_from_dropbox(source_path):
+def download_image_from_firebase(source_path):
     try:
-        # init dropbox cli
-        dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-        # download img
-        metadata, response = dbx.files_download(source_path)
-        image_data = response.content
+        # init bucket obj
+
+        buc = bucket()
+        blob = buc.blob(source_path)
+        image_data = blob.download_as_bytes()
 
         # return img
         return Image.open(BytesIO(image_data))

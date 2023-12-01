@@ -113,7 +113,7 @@ def updatescore():
         return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
 
 @app.route('/api/addphoto', methods=['POST'])
-def updatescore():
+def addphoto():
     '''
     This route adds a photo for a user.
     Requires user_id.
