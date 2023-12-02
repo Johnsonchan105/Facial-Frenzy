@@ -4,8 +4,6 @@ import cv2
 from keras.models import load_model
 import numpy as np
 
-from utils import *
-
 from utils.datasets import get_labels
 from utils.inference import detect_faces
 from utils.inference import draw_text
@@ -14,36 +12,42 @@ from utils.inference import apply_offsets
 from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
 
-# parameters for loading data and images
+import random
+import time
+
 detection_model_path = './trained_models/haarcascade_frontalface_default.xml'
 emotion_model_path = './trained_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
 emotion_labels = get_labels('fer2013')
 
-# hyper-parameters for bounding boxes shape
-frame_window = 10
-emotion_offsets = (20, 40)
-
-# loading models
 face_detection = load_detection_model(detection_model_path)
 emotion_classifier = load_model(emotion_model_path, compile=False)
-
-# getting input model shapes for inference
 emotion_target_size = emotion_classifier.input_shape[1:3]
 
-# starting lists for calculating modes
+frame_window = 10
+emotion_offsets = (20, 40)
 emotion_window = []
+#pull high score from API
+highscore = 0
+score = 0
+level = 1
+time_limit = 5
 
-# starting video streaming
-cv2.namedWindow('window_frame')
-video_capture = cv2.VideoCapture(0)
-while True:
-    bgr_image = video_capture.read()[1]
-    gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
-    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
-    faces = detect_faces(face_detection, gray_image)
+emotion_score = {
+    'neutral': 10,
+    'happy': 15,
+    'surprise': 20,
+    'angry': 25,
+    'sad': 30,
+    'fear': 35,
+    'disgust': 40
+}
 
+def gen_random_emotion():
+    emotions = ['happy', 'sad', 'neutral', 'angry', 'surprise', 'fear', 'disgust']
+    return random.choice(emotions)
+
+def emotion_detection(faces, gray_image):
     for face_coordinates in faces:
-
         x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:
@@ -84,6 +88,42 @@ while True:
         draw_bounding_box(face_coordinates, rgb_image, color)
         draw_text(face_coordinates, rgb_image, emotion_mode,
                   color, 0, -45, 1, 1)
+        return emotion_text
+
+# starting video streaming
+cv2.namedWindow('window_frame')
+video_capture = cv2.VideoCapture(0)
+start_time = time.time()
+end_emotion = ''
+i = 0
+expected_emotion = gen_random_emotion()
+while True:
+    ret, frame = video_capture.read()
+    bgr_image = video_capture.read()[1]
+    gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
+    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+    faces = detect_faces(face_detection, gray_image)
+
+
+    if time.time() - start_time < time_limit:
+        end_emotion = emotion_detection(faces, gray_image)
+    else:
+        #sleep seconds when displaying emotion, update startime to current time to restart game
+        if expected_emotion == end_emotion:
+            score += emotion_score[end_emotion]
+            print("you got it correct!")
+        else:
+            print("you got it wrong :(")
+        print("your score is " + str(score))
+        time.sleep(1)
+        expected_emotion = gen_random_emotion()
+        print('your next emotion is ' + expected_emotion)
+        time.sleep(1)
+        print('ready?')
+        time.sleep(1)
+        print('go!')
+        start_time = time.time()
+        
 
     bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
     cv2.imshow('window_frame', bgr_image)
