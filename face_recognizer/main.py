@@ -3,6 +3,7 @@ import os, sys
 import cv2
 import numpy as np
 import math
+import time
 
 def face_confidence(face_distance, face_match_threshold=0.6):
     range = (1.0 - face_match_threshold)
@@ -61,13 +62,16 @@ class FaceRecognition:
 
 
     def run_recognition(self):
-        video_capture = cv2.VideoCapture(0)
+        video_capture = cv2.VideoCapture(1) # change to 1 since 0 connects to iPhone
 
         if not video_capture.isOpened():
             sys.exit('Video source not found...')
 
         unknown_face_detected = False
 
+        current_recognized_name = None
+        last_recognized_name = None
+        name_recognition_start = None
 
         while True:
             ret, frame = video_capture.read()
@@ -98,12 +102,33 @@ class FaceRecognition:
 
                     if confidence != 'Unknown':
                         confidenceNum = float(confidence.split('%')[0])
+                        if confidenceNum < 97:
+                            name = 'Unknown'
+                            confidence = 'Unknown'
 
-                    if confidenceNum < 96 or confidence == 'Unknown':
+                    if confidence == 'Unknown':
                         name = 'Unknown'
                         confidence = 'Unknown'
 
                     self.face_names.append(f'{name} ({confidence})')
+
+                    # if name != 'Unknown':
+                    #     return name
+                    
+                    if name != 'Unknown':
+                        if current_recognized_name != name:
+                            current_recognized_name = name
+                            last_recognized_name = name
+                            name_recognition_start = time.time()
+                        elif (current_recognized_name == last_recognized_name and time.time() - name_recognition_start >= 3):
+                            return current_recognized_name
+                    else:
+                        current_recognized_name = None
+                        last_recognized_name = None
+                        name_recognition_start = None
+                        name = 'Unknown'
+
+
 
                 for name in self.face_names:
                         if name.split(' ')[0] == 'Unknown':
@@ -147,4 +172,5 @@ class FaceRecognition:
 
 if __name__ == '__main__':
     fr = FaceRecognition()
-    fr.run_recognition()
+    playerName = fr.run_recognition()
+    print(playerName)
