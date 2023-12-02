@@ -112,7 +112,9 @@ class EmotionGame():
             if time.time() - start_time < self.time_limit:
                 end_emotion = self.emotion_detection(faces, gray_image, rgb_image)
             else:
-                #sleep seconds when displaying emotion, update startime to current time to restart game
+                curr_guesses += 1
+                if curr_guesses > self.num_guesses:
+                    break
                 announce = rgb_image.copy()
                 text_position = (int(frame.shape[1] / 4), int(frame.shape[0] / 6))
                 if expected_emotion == end_emotion:
@@ -135,7 +137,6 @@ class EmotionGame():
                 cv2.putText(ready, "Ready?", text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(ready, cv2.COLOR_RGB2BGR))
                 cv2.waitKey(1000)
-                curr_guesses += 1
                 start_time = time.time()
             bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
             cv2.imshow('window_frame', bgr_image)
