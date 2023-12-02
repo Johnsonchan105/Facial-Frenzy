@@ -99,7 +99,7 @@ def compress_image(image_data, quality=85):
     with Image.open(image_data) as img:
 
         # resize image
-        img.thumbnail((507, 507))
+        img.thumbnail((351, 351))
 
         # compress image
         image_buffer = BytesIO()

@@ -1,9 +1,10 @@
 from __main__ import app
 import sys, os
 from datetime import timedelta, datetime, timezone
-from flask import request, jsonify
+from flask import request, jsonify, render_template, send_file
 import utils
 import uuid
+import io
 #import the flask-jwt-extended interface in the parent directory
 sys.path.append(os.path.join(os.path.dirname(__file__), '.', 'flask-jwt-extended'))
 
@@ -147,10 +148,21 @@ def getallfaces(user_id):
     Requires user_id.
     '''
     try:
-        print(utils.get_player_images_paths(user_id))
+        player = utils.get_player_by_id_from_db(user_id)
+        image_paths = utils.get_player_images_paths(user_id)
+
+        return render_template('player.html', player=player.name, wins=player.wins, images=image_paths)
 
         return {'MESSAGE': f"Successfully uploaded player image"}, 200 
         
     except Exception as e:
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
+    
+@app.route('/player/faces/<int:user_id>/<string:uid>', methods=['GET'])
+def getface(user_id, uid):
+    image = utils.download_image_from_firebase(f'faces/{user_id}/{uid}') 
+    image_data = io.BytesIO()
+    image.save(image_data, format='PNG')
+    image_data.seek(0)
+    return send_file(image_data, mimetype='image/png')
