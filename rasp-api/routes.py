@@ -107,11 +107,12 @@ def updatescore():
         params = request.form
 
     user_id = params.get('user_id', None)
-    if not user_id:
+    points = params.get('points', None)
+    if not user_id and not points:
         return {'MESSAGE': 'Missing arguments'}, 401
     try:
         if user_id:
-            utils.update_player_score(user_id)
+            utils.update_player_score(user_id, points)
         return {'MESSAGE': f"Successfully updated player score"}, 200 
     except Exception as e:
         print(f"Exception in postlog: {e}")

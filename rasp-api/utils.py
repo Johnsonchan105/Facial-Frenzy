@@ -30,9 +30,9 @@ def get_player_by_name_from_db(name):
 def get_player_by_id_from_db(uid):
     return db_session.query(Players).filter(Players.user_id == uid).one_or_none()
 
-def update_player_score(uid):
+def update_player_score(uid, points):
     player = get_player_by_id_from_db(uid)
-    player.wins += 1
+    player.wins += points
     db_session.commit()
     
 def add_player_to_db(name, gamertag):

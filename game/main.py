@@ -38,7 +38,7 @@ def get_player(name):
         # player doesnt exist. make a new one
         return create_player(name)
     
-    print(f'WELCOME BACK{player_name}!')
+    print(f'WELCOME BACK {player_name}!')
     
     return content
 
@@ -50,9 +50,11 @@ if __name__ == "__main__":
         print('PLEASE PLAY AGAIN')
         sys.exit()
     
-    player_name = "JOHNZ" # login_player()
+    player_name = login_player()
     
     # get the player obj from the db
     player = get_player(player_name)
+
+    
 
     
