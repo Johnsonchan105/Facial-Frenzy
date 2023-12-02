@@ -3,6 +3,7 @@ import os, sys
 import cv2
 import numpy as np
 import math
+import asyncio
 import time
 
 def face_confidence(face_distance, face_match_threshold=0.6):
@@ -61,8 +62,8 @@ class FaceRecognition:
         return text
 
 
-    def run_recognition(self):
-        video_capture = cv2.VideoCapture(1) # change to 1 since 0 connects to iPhone
+    async def run_recognition(self):
+        video_capture = cv2.VideoCapture(0)
 
         if not video_capture.isOpened():
             sys.exit('Video source not found...')

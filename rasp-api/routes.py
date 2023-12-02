@@ -49,6 +49,9 @@ def getplayer():
         elif user_id:
             player = utils.get_player_by_id_from_db(user_id)
 
+        if not player:
+            return jsonify({'MESSAGE': f"Player doesn't exist."}), 401 
+ 
         return jsonify(
                 id=player.user_id,
                 name=player.name,
@@ -104,11 +107,12 @@ def updatescore():
         params = request.form
 
     user_id = params.get('user_id', None)
-    if not user_id:
+    points = params.get('points', None)
+    if not user_id and not points:
         return {'MESSAGE': 'Missing arguments'}, 401
     try:
         if user_id:
-            utils.update_player_score(user_id)
+            utils.update_player_score(user_id, points)
         return {'MESSAGE': f"Successfully updated player score"}, 200 
     except Exception as e:
         print(f"Exception in postlog: {e}")
