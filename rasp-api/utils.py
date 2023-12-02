@@ -107,6 +107,13 @@ def compress_image(image_data, quality=85):
         image_buffer.seek(0)
         
         return image_buffer
+    
+def get_leaderboard():
+    '''
+    Get the leaderboard
+    '''
+    leaderboard = db_session.query(Players).order_by(Players.wins.desc())
+    return [[player.name, player.wins] for player in leaderboard]
 
 import firebase_admin
 from firebase_admin import credentials

@@ -166,3 +166,8 @@ def getface(user_id, uid):
     image.save(image_data, format='PNG')
     image_data.seek(0)
     return send_file(image_data, mimetype='image/png')
+
+@app.route('/leaderboard', methods=['GET'])
+def leaderboard():
+    leaderboard = utils.get_leaderboard()
+    return render_template('leaderboard.html', leaderboard=leaderboard)
