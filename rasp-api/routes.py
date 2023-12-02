@@ -49,6 +49,9 @@ def getplayer():
         elif user_id:
             player = utils.get_player_by_id_from_db(user_id)
 
+        if not player:
+            return jsonify({'MESSAGE': f"Player doesn't exist."}), 401 
+ 
         return jsonify(
                 id=player.user_id,
                 name=player.name,

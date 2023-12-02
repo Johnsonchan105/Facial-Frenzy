@@ -3,6 +3,7 @@ import os, sys
 import cv2
 import numpy as np
 import math
+import asyncio
 
 def face_confidence(face_distance, face_match_threshold=0.7):
     range = (1.0 - face_match_threshold)
@@ -60,7 +61,7 @@ class FaceRecognition:
         return text
 
 
-    def run_recognition(self):
+    async def run_recognition(self):
         video_capture = cv2.VideoCapture(0)
 
         if not video_capture.isOpened():
