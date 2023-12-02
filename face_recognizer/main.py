@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import math
 
-def face_confidence(face_distance, face_match_threshold=0.6):
+def face_confidence(face_distance, face_match_threshold=0.7):
     range = (1.0 - face_match_threshold)
     linear_val = (1.0 - face_distance) / (range * 2.0)
 
@@ -99,11 +99,14 @@ class FaceRecognition:
                     if confidence != 'Unknown':
                         confidenceNum = float(confidence.split('%')[0])
 
-                    if confidenceNum < 96 or confidence == 'Unknown':
+                    if confidence == 'Unknown':
                         name = 'Unknown'
                         confidence = 'Unknown'
 
                     self.face_names.append(f'{name} ({confidence})')
+
+                    if name != 'Unknown':
+                        return name
 
                 for name in self.face_names:
                         if name.split(' ')[0] == 'Unknown':
@@ -147,4 +150,5 @@ class FaceRecognition:
 
 if __name__ == '__main__':
     fr = FaceRecognition()
-    fr.run_recognition()
+    playerName = fr.run_recognition()
+    print(playerName)
