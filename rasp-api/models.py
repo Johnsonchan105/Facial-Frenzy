@@ -26,4 +26,4 @@ class Facial(Base):
     __tablename__ = 'facials'
     id = Column(Integer, primary_key=True) #automatically serial (auto-assigned, incremented value) with primary_key
     user_id = Column('user_id', Integer, ForeignKey('players.user_id'), nullable=False)
-    img_path = Column('img_path', String(50), nullable=False) 
+    img_path = Column('img_path', String(150), nullable=False) 

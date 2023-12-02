@@ -8,11 +8,10 @@ from dropbox import DropboxOAuth2FlowNoRedirect
 import os.path
 from PIL import Image
 from io import BytesIO
-
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin.storage import bucket
-import tempfile
+
 
 # init the firebase admin
 cred = credentials.Certificate("./service-account.json")
@@ -73,12 +72,24 @@ def postface():
     content = res.json()
     print(content, res.status_code)
 
+def player():
+    print('TEST: GET PLAYER PROFILE')
+
+    path = '/player/1'
+    endpoint = url + path
+
+    res = requests.get(endpoint)
+
+    content = res.json()
+    print(content, res.status_code)
+
 
 if __name__ == "__main__":
     # getplayer()
     # createplayer()
     # updatescore()
     postface()
+    # player()
     
 
     

@@ -10,7 +10,7 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy.schema import DropTable
 from sqlalchemy.ext.compiler import compiles
 from db import db_session
-from models import Players
+from models import Players, Facial
 
 dotenv.load_dotenv() #set the environment variables from .env file
 
@@ -55,6 +55,58 @@ def add_player_to_db(name, gamertag):
 def add_players_in_list_to_db(plist):
     for player in plist:
         add_player_to_db(player[0], player[1])
+
+def add_player_image(user_id, path):
+    obj = None
+    try:
+        obj = db_session.query(Facial).filter(Facial.img_path == path).one_or_none()
+        if not obj:
+            obj= Facial(
+                user_id=user_id,
+                img_path=path
+            )
+            db_session.add(obj)
+            db_session.commit()
+        else:
+            print(f"add_player_image: image already exists in DB with id: {obj.img_path}")
+    except Exception as e:
+        print("Exception in add_player_image: {}".format(e))
+        traceback.print_exc()
+
+def get_player_images_paths(user_id):
+    '''
+    Get's top 5 images of player
+    '''
+    try:
+        facials = db_session.query(Facial).filter(Facial.user_id == user_id).limit(5)
+        facial_img_paths = [facial.img_path for facial in facials]
+        return facial_img_paths
+    except Exception as e:
+        print("Exception in get_player_images: {}".format(e))
+        traceback.print_exc()
+
+def compress_image(image_data, quality=85):
+    """
+    Compress an image in a Flask FileStorage object with Pillow.
+
+    Parameters:
+    - file_storage: Flask FileStorage object representing the input image.
+    - quality: The compression quality (0 to 100, where 0 is the highest compression and 100 is the best quality).
+
+    Returns:
+    - BytesIO: In-memory buffer containing the compressed image.
+    """
+    with Image.open(image_data) as img:
+
+        # resize image
+        img.thumbnail((507, 507))
+
+        # compress image
+        image_buffer = BytesIO()
+        img.save(image_buffer, 'PNG', quality=quality)
+        image_buffer.seek(0)
+        
+        return image_buffer
 
 import firebase_admin
 from firebase_admin import credentials

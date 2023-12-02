@@ -124,12 +124,31 @@ def postface(user_id):
         return {'MESSAGE': 'Missing image'}, 401
     else:
         file = request.files['face']
-        print(file)
 
     try:
-        id = str(uuid.uuid4().hex)[:8]
-        utils.upload_image_to_firebase(file, f'faces/{user_id}/{id}')
+        uid = str(uuid.uuid4().hex)[:8]
+        storage_path = f'faces/{user_id}/{uid}'
+        file = utils.compress_image(file, 20)
+        utils.upload_image_to_firebase(file, storage_path)
+        utils.add_player_image(user_id, storage_path)
+        image = utils.download_image_from_firebase(storage_path)
+        image.show()
+
+        return {'MESSAGE': f"Successfully uploaded player image"}, 200 
         
+    except Exception as e:
+        print(f"Exception in postlog: {e}")
+        return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
+
+@app.route('/player/<int:user_id>', methods=['GET'])
+def getallfaces(user_id):
+    '''
+    This route displays a player and their game info
+    Requires user_id.
+    '''
+    try:
+        print(utils.get_player_images_paths(user_id))
+
         return {'MESSAGE': f"Successfully uploaded player image"}, 200 
         
     except Exception as e:
