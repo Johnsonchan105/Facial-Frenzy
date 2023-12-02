@@ -50,7 +50,7 @@ def updatescore():
     path = '/api/updatescore'
     endpoint = url + path
 
-    res = requests.post(endpoint, json={'user_id': 1})
+    res = requests.post(endpoint, json={'user_id': 3, 'points': 10})
 
     content = res.json()
     print(content, res.status_code)
@@ -85,9 +85,9 @@ def player():
 
 
 if __name__ == "__main__":
-    # getplayer()
-    # createplayer()
-    # updatescore()
+    getplayer()
+    createplayer()
+    updatescore()
     postface()
     # player()
     

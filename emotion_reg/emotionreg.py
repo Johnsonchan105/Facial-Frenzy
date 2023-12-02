@@ -1,5 +1,6 @@
 from statistics import mode
-
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import cv2
 from keras.models import load_model
 import numpy as np
@@ -61,7 +62,7 @@ class EmotionGame():
             gray_face = preprocess_input(gray_face, True)
             gray_face = np.expand_dims(gray_face, 0)
             gray_face = np.expand_dims(gray_face, -1)
-            emotion_prediction = self.emotion_classifier.predict(gray_face)
+            emotion_prediction = self.emotion_classifier.predict(gray_face, verbose=False)
             emotion_probability = np.max(emotion_prediction)
             emotion_label_arg = np.argmax(emotion_prediction)
             emotion_text = self.emotion_labels[emotion_label_arg]
@@ -144,5 +145,6 @@ class EmotionGame():
                 break
         video_capture.release()
         cv2.destroyAllWindows()
-game = EmotionGame()
-game.run_game()
+if __name__ == "__main__":
+    game = EmotionGame()
+    game.run_game()
