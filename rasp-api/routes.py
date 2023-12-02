@@ -1,8 +1,10 @@
 from __main__ import app
 import sys, os
 from datetime import timedelta, datetime, timezone
-from flask import request, jsonify
+from flask import request, jsonify, render_template, send_file
 import utils
+import uuid
+import io
 #import the flask-jwt-extended interface in the parent directory
 sys.path.append(os.path.join(os.path.dirname(__file__), '.', 'flask-jwt-extended'))
 
@@ -112,29 +114,60 @@ def updatescore():
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
 
-@app.route('/api/addphoto', methods=['POST'])
-def updatescore():
+@app.route('/api/postface/<int:user_id>', methods=['POST'])
+def postface(user_id):
     '''
     This route adds a photo for a user.
     Requires user_id.
     '''
-     # parse params
-    params = None
-    if request.args:
-        params = request.args
-    elif request.json: 
-        params = request.json
-    elif request.form: 
-        params = request.form
+    
+    if 'face' not in request.files:
+        return {'MESSAGE': 'Missing image'}, 401
+    else:
+        file = request.files['face']
 
-    user_id = params.get('user_id', None)
-
-    if not user_id:
-        return {'MESSAGE': 'Missing arguments'}, 401
     try:
-        if user_id:
-            utils.update_player_score(user_id)
-        return {'MESSAGE': f"Successfully updated player score"}, 200 
+        uid = str(uuid.uuid4().hex)[:8]
+        storage_path = f'faces/{user_id}/{uid}'
+        file = utils.compress_image(file, 20)
+        utils.upload_image_to_firebase(file, storage_path)
+        utils.add_player_image(user_id, storage_path)
+        image = utils.download_image_from_firebase(storage_path)
+        image.show()
+
+        return {'MESSAGE': f"Successfully uploaded player image"}, 200 
+        
     except Exception as e:
         print(f"Exception in postlog: {e}")
         return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
+
+@app.route('/player/<int:user_id>', methods=['GET'])
+def getallfaces(user_id):
+    '''
+    This route displays a player and their game info
+    Requires user_id.
+    '''
+    try:
+        player = utils.get_player_by_id_from_db(user_id)
+        image_paths = utils.get_player_images_paths(user_id)
+
+        return render_template('player.html', player=player.name, wins=player.wins, images=image_paths)
+
+        return {'MESSAGE': f"Successfully uploaded player image"}, 200 
+        
+    except Exception as e:
+        print(f"Exception in postlog: {e}")
+        return {'MESSAGE': f"Exception in /api/updatescore {e}"}, 401 
+    
+@app.route('/player/faces/<int:user_id>/<string:uid>', methods=['GET'])
+def getface(user_id, uid):
+    image = utils.download_image_from_firebase(f'faces/{user_id}/{uid}') 
+    image_data = io.BytesIO()
+    image.save(image_data, format='PNG')
+    image_data.seek(0)
+    return send_file(image_data, mimetype='image/png')
+
+@app.route('/leaderboard', methods=['GET'])
+def leaderboard():
+    leaderboard = utils.get_leaderboard()
+    return render_template('leaderboard.html', leaderboard=leaderboard)

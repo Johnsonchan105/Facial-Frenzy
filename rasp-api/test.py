@@ -1,16 +1,25 @@
 import requests
 from datetime import datetime, timedelta, timezone
 import os, sys, dotenv, random, string, argparse
-from utils import upload_image_to_dropbox
 import uuid
 import dropbox
 from dropbox.exceptions import AuthError, ApiError
+from dropbox import DropboxOAuth2FlowNoRedirect
+import os.path
+from PIL import Image
+from io import BytesIO
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin.storage import bucket
+
+
+# init the firebase admin
+cred = credentials.Certificate("./service-account.json")
+firebase_admin.initialize_app(cred,{'storageBucket': 'facial-frenzy.appspot.com'})
 
 url = 'http://localhost:8000'
 
 dotenv.load_dotenv() #set the environment variables from .env file
-
-DROPBOX_ACCESS_TOKEN = os.environ.get("DROPBOX_APP_ACCESS_TOKEN")
 
 def getplayer():
     print('TEST: GET PLAYER')
@@ -46,23 +55,41 @@ def updatescore():
     content = res.json()
     print(content, res.status_code)
 
-def upload_image_to_dropbox(image_path, destination_path):
-    try:
-        # init dropbox cli
-        dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
+def postface():
+    print('TEST: POST PLAYER IMAGE')
 
-        with open(image_path, 'rb') as f:
-            dbx.files_upload(f.read(), destination_path)
+    path = '/api/postface/1'
+    endpoint = url + path
 
-        print(f"Image '{image_path}' uploaded to Dropbox at '{destination_path}'")
+    img = Image.open('./data/johno1.png')
 
-    except AuthError as e:
-        print(f"Error: {e}")
-    except ApiError as e:
-        print(f"API Error: {e}")
+    files = { 'face': open('./data/johno1.png', 'rb') }
+
+    headers = {'content-type': 'image/png'}
+
+    res = requests.post(endpoint, data={'expression': 'hi'}, files=files)
+
+    content = res.json()
+    print(content, res.status_code)
+
+def player():
+    print('TEST: GET PLAYER PROFILE')
+
+    path = '/player/1'
+    endpoint = url + path
+
+    res = requests.get(endpoint)
+
+    content = res.json()
+    print(content, res.status_code)
+
 
 if __name__ == "__main__":
     # getplayer()
     # createplayer()
     # updatescore()
-    upload_image_to_dropbox('./data/johno1.png', f'/faces/1/{str(uuid.uuid4().hex)[:8]}')
+    postface()
+    # player()
+    
+
+    
