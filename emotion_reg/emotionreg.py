@@ -32,6 +32,8 @@ class EmotionGame():
         self.score = 0
         self.level = 1
         self.time_limit = 5
+        #self.total_time = 90
+        self.num_guesses = 5
 
         self.emotion_score = {
             'neutral': 10,
@@ -95,9 +97,11 @@ class EmotionGame():
         video_capture = cv2.VideoCapture(0)
         start_time = time.time()
         end_emotion = ''
-        expected_emotion = 'neutral' #gen_random_emotion()
-        print(expected_emotion)
+        expected_emotion = self.gen_random_emotion()
+        curr_guesses = 0
         while True:
+            if curr_guesses > self.num_guesses:
+                break
             ret, frame = video_capture.read()
             bgr_image = video_capture.read()[1]
             gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
@@ -131,6 +135,7 @@ class EmotionGame():
                 cv2.putText(ready, "Ready?", text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(ready, cv2.COLOR_RGB2BGR))
                 cv2.waitKey(1000)
+                curr_guesses += 1
                 start_time = time.time()
             bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
             cv2.imshow('window_frame', bgr_image)
