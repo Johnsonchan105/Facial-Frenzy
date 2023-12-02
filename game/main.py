@@ -39,7 +39,14 @@ def get_player(name):
 
     if res.status_code != 200:
         # player doesnt exist. make a new one
-        return create_player(name)
+        create_player(name)
+        
+        PATH = '/api/getplayer'
+        endpoint = API_ENDPOINT + PATH
+
+        res = requests.get(endpoint, json={'name': name})
+
+        return res.json()
     
     print(f'WELCOME BACK {name}!')
     
@@ -70,11 +77,11 @@ if __name__ == "__main__":
     # get the player obj from the db
     player = get_player(player_name)
 
-    # emo_game = EmotionGame()
-    # emo_game.run_game()
+    emo_game = EmotionGame()
+    emo_game.run_game()
 
     # get player score
-    score = 10 # emo_game.score
+    score = emo_game.score
 
     update_score(player['id'], score)
     print('Your new score is:', get_player(player['name'])['wins'])
