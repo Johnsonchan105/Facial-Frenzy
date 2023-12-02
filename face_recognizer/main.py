@@ -4,8 +4,9 @@ import cv2
 import numpy as np
 import math
 import asyncio
+import time
 
-def face_confidence(face_distance, face_match_threshold=0.7):
+def face_confidence(face_distance, face_match_threshold=0.6):
     range = (1.0 - face_match_threshold)
     linear_val = (1.0 - face_distance) / (range * 2.0)
 
@@ -69,6 +70,9 @@ class FaceRecognition:
 
         unknown_face_detected = False
 
+        current_recognized_name = None
+        last_recognized_name = None
+        name_recognition_start = None
 
         while True:
             ret, frame = video_capture.read()
@@ -99,6 +103,9 @@ class FaceRecognition:
 
                     if confidence != 'Unknown':
                         confidenceNum = float(confidence.split('%')[0])
+                        if confidenceNum < 97:
+                            name = 'Unknown'
+                            confidence = 'Unknown'
 
                     if confidence == 'Unknown':
                         name = 'Unknown'
@@ -106,8 +113,23 @@ class FaceRecognition:
 
                     self.face_names.append(f'{name} ({confidence})')
 
+                    # if name != 'Unknown':
+                    #     return name
+                    
                     if name != 'Unknown':
-                        return name
+                        if current_recognized_name != name:
+                            current_recognized_name = name
+                            last_recognized_name = name
+                            name_recognition_start = time.time()
+                        elif (current_recognized_name == last_recognized_name and time.time() - name_recognition_start >= 3):
+                            return current_recognized_name
+                    else:
+                        current_recognized_name = None
+                        last_recognized_name = None
+                        name_recognition_start = None
+                        name = 'Unknown'
+
+
 
                 for name in self.face_names:
                         if name.split(' ')[0] == 'Unknown':
