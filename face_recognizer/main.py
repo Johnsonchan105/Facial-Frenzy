@@ -24,6 +24,8 @@ class FaceRecognition:
     process_current_frame = True
 
     def __init__(self):
+        if not os.path.exists('faces'):
+            os.makedirs('faces')
         self.encode_faces()
 
     def encode_faces(self):
@@ -34,7 +36,29 @@ class FaceRecognition:
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
 
-        print(self.known_face_names)
+    def update_known_faces(self, user_name, frame):
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        face_encoding = face_recognition.face_encodings(rgb_frame)[0]
+        self.known_face_encodings.append(face_encoding)
+        self.known_face_names.append(f'{user_name}')
+
+    def text_input_box(self, frame, prompt):
+        text = ""
+        while True:
+            key = cv2.waitKey(1) & 0xFF
+            if key == 13: # enter
+                break
+            elif key == 8 or key == 127: # backspace or delete
+                text = text[:-1]
+            elif key >= 32 and key <= 126: # valid chars
+                text += chr(key)
+
+            input_frame = frame.copy()
+            cv2.rectangle(input_frame, (50, 50), (450, 100), (200, 200, 200), -1)
+            cv2.putText(input_frame, prompt + text, (60, 85), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+            cv2.imshow('Face Recognition', input_frame)
+        return text
+
 
     def run_recognition(self):
         video_capture = cv2.VideoCapture(0)
@@ -42,8 +66,12 @@ class FaceRecognition:
         if not video_capture.isOpened():
             sys.exit('Video source not found...')
 
+        unknown_face_detected = False
+
+
         while True:
             ret, frame = video_capture.read()
+            key = cv2.waitKey(1) 
 
             if self.process_current_frame:
                 small_frame = cv2.resize(frame, (0, 0), fx = 0.25, fy = 0.25)
@@ -54,6 +82,8 @@ class FaceRecognition:
                 self.face_encodings = face_recognition.face_encodings(rgb_small_frame, self.face_locations)
 
                 self.face_names = []
+                unknown_face_detected = False 
+
                 for face_encoding in self.face_encodings:
                     matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
                     name = 'Unknown'
@@ -69,11 +99,15 @@ class FaceRecognition:
                     if confidence != 'Unknown':
                         confidenceNum = float(confidence.split('%')[0])
 
-                    if confidenceNum < 97 or confidence == 'Unknown':
+                    if confidenceNum < 96 or confidence == 'Unknown':
                         name = 'Unknown'
                         confidence = 'Unknown'
 
                     self.face_names.append(f'{name} ({confidence})')
+
+                for name in self.face_names:
+                        if name.split(' ')[0] == 'Unknown':
+                            unknown_face_detected = True
             
             self.process_current_frame = not self.process_current_frame
 
@@ -88,10 +122,24 @@ class FaceRecognition:
                 cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), -1)
                 cv2.putText(frame, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
 
+            if unknown_face_detected:
+                cv2.putText(frame, "Press 'c' to capture your face", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+
             cv2.imshow('Face Recognition', frame)
 
-            if cv2.waitKey(1) == ord('q'):
+            if key == ord('q'):
                 break
+
+            if key == ord('c'):
+                ret, frame_to_save = video_capture.read()
+                if ret:
+                    user_name = self.text_input_box(frame_to_save, "Enter your name: ")
+                    if user_name:
+                        user_name = user_name + "_"
+                        existing_count = sum(name.startswith(f'{user_name}') for name in self.known_face_names) + 1
+                        cv2.imwrite(f'faces/{user_name}{existing_count}.png', frame_to_save)
+                        self.update_known_faces(user_name, frame_to_save)
+
         
         video_capture.release()
         cv2.destroyAllWindows()
