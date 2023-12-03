@@ -85,10 +85,7 @@ def update_score(user_id, score):
 
     content = res.json()
 
-    print(content, res.status_code)
-
 def post_face(user_id, image_data):
-    print('TEST: POST PLAYER IMAGE')
 
     PATH = f'/api/postface/{user_id}'
     endpoint = API_ENDPOINT + PATH
