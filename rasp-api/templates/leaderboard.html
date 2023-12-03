@@ -14,7 +14,7 @@
         <th>Score</th>
         {% for player in leaderboard %}
             <tr>
-                <td>{{ player[0] }}</td>
+                <td><a href="{{ player[2] }}">{{ player[0] }}</a></td>
                 <td>{{ player[1] }}</td>
             </tr>
         {% endfor %}

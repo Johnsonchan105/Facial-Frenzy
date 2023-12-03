@@ -2,14 +2,37 @@ import sys
 import sys
 sys.path.append("..")
 sys.path.append("../emotion_reg")
-
+from io import BytesIO
 import requests
 from face_recognizer.main import FaceRecognition
 from emotion_reg.emotionreg import EmotionGame
 import asyncio
+from PIL import Image
 
 API_ENDPOINT = 'http://localhost:8000'
 
+def compress_image(image_data, quality=85):
+    """
+    Compress an image in a Flask FileStorage object with Pillow.
+
+    Parameters:
+    - file_storage: Flask FileStorage object representing the input image.
+    - quality: The compression quality (0 to 100, where 0 is the highest compression and 100 is the best quality).
+
+    Returns:
+    - BytesIO: In-memory buffer containing the compressed image.
+    """
+
+    # resize image
+    img.thumbnail((500, 500))
+
+    # compress image
+    image_buffer = BytesIO()
+    img.save(image_buffer, 'PNG', quality=quality)
+    image_buffer.seek(0)
+    
+    return image_buffer
+    
 def login_player():
     fr = FaceRecognition()
     player_name = asyncio.run(fr.run_recognition())
@@ -64,6 +87,17 @@ def update_score(user_id, score):
 
     print(content, res.status_code)
 
+def post_face(user_id, image_data):
+    print('TEST: POST PLAYER IMAGE')
+
+    PATH = f'/api/postface/{user_id}'
+    endpoint = API_ENDPOINT + PATH
+
+
+    files = { 'face': image_data }
+
+    _ = requests.post(endpoint, files=files)
+
 if __name__ == "__main__":
     print('THIS IS FACIAL FRENZY')
     print('SHALL WE PLAY A GAME? (y/n)')
@@ -85,3 +119,11 @@ if __name__ == "__main__":
 
     update_score(player['id'], score)
     print('Your new score is:', get_player(player['name'])['wins'])
+
+    for image in emo_game.pictures:
+        img = Image.fromarray(image)
+        img = compress_image(img)
+        # Image.open(img).show()
+        post_face(player['id'], img)
+
+    print('Your pictures have been uploaded! Check out your profile.')

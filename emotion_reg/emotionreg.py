@@ -32,9 +32,10 @@ class EmotionGame():
         self.highscore = 0
         self.score = 0
         self.level = 1
-        self.time_limit = 5
+        self.time_limit = 3
         #self.total_time = 90
-        self.num_guesses = 5
+        self.num_guesses = 3
+        self.pictures = []
 
         self.emotion_score = {
             'neutral': 10,
@@ -101,26 +102,62 @@ class EmotionGame():
         expected_emotion = self.gen_random_emotion()
         curr_guesses = 0
         while True:
-            if curr_guesses > self.num_guesses:
-                break
             ret, frame = video_capture.read()
             bgr_image = video_capture.read()[1]
             gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
             rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
             faces = detect_faces(self.face_detection, gray_image)
             cv2.putText(rgb_image, "Score: " + str(self.score), (10,20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            if curr_guesses == 0:
+                intro = rgb_image.copy()
+                cv2.putText(intro, "Welcome to FACIAL FRENZY", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.imshow('window_frame', cv2.cvtColor(intro, cv2.COLOR_RGB2BGR))
+                cv2.waitKey(2000)
 
+                rules = rgb_image.copy()
+                cv2.putText(rules, "You have 10 seconds and 5 seconds to imitate the emotion!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.imshow('window_frame', cv2.cvtColor(rules, cv2.COLOR_RGB2BGR))
+                cv2.waitKey(2000)
+
+                pts = rgb_image.copy()
+                cv2.putText(pts, "Making a face increases your score!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.imshow('window_frame', cv2.cvtColor(pts, cv2.COLOR_RGB2BGR))
+                cv2.waitKey(2000)
+
+                highscore = rgb_image.copy()
+                cv2.putText(highscore, "And keep track of your high score online!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.imshow('window_frame', cv2.cvtColor(highscore, cv2.COLOR_RGB2BGR))
+                cv2.waitKey(2000)
+
+                start = rgb_image.copy()
+                cv2.putText(start, "Now starting the game, your emotion is " + expected_emotion, (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.imshow('window_frame', cv2.cvtColor(start, cv2.COLOR_RGB2BGR))
+                cv2.waitKey(1800)
+
+                rd = rgb_image.copy()
+                cv2.putText(rd, "Ready?", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.imshow('window_frame', cv2.cvtColor(rd, cv2.COLOR_RGB2BGR))
+                cv2.waitKey(1000)
+
+                g = rgb_image.copy()
+                cv2.putText(g, "Go!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.imshow('window_frame', cv2.cvtColor(g, cv2.COLOR_RGB2BGR))
+                cv2.waitKey(700)
+                curr_guesses += 1
+                start_time = time.time()
+                continue
             if time.time() - start_time < self.time_limit:
                 end_emotion = self.emotion_detection(faces, gray_image, rgb_image)
             else:
-                #sleep seconds when displaying emotion, update startime to current time to restart game
+                self.pictures.append(rgb_image)
+                curr_guesses += 1
                 announce = rgb_image.copy()
                 text_position = (int(frame.shape[1] / 4), int(frame.shape[0] / 6))
                 if expected_emotion == end_emotion:
                     self.score += self.emotion_score[end_emotion]
                     cv2.putText(announce, "You Got It Right!", text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 else:
-                    cv2.putText(announce, "You Got It Wrong :(", text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                    cv2.putText(announce, "You Got It Wrong :(", text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(announce, cv2.COLOR_RGB2BGR))
                 cv2.waitKey(1000)
                 expcted = rgb_image.copy()
@@ -129,6 +166,8 @@ class EmotionGame():
                     if temp != expected_emotion:
                         expected_emotion = temp
                         break
+                if curr_guesses > self.num_guesses:
+                    break
                 cv2.putText(expcted, "Your Next Emotion is " + expected_emotion, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(expcted, cv2.COLOR_RGB2BGR))
                 cv2.waitKey(2000)
@@ -136,7 +175,6 @@ class EmotionGame():
                 cv2.putText(ready, "Ready?", text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(ready, cv2.COLOR_RGB2BGR))
                 cv2.waitKey(1000)
-                curr_guesses += 1
                 start_time = time.time()
             bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
             cv2.imshow('window_frame', bgr_image)
