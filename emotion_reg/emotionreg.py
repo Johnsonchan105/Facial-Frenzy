@@ -108,6 +108,8 @@ class EmotionGame():
             rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
             faces = detect_faces(self.face_detection, gray_image)
             cv2.putText(rgb_image, "Score: " + str(self.score), (10,20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            if(curr_guesses != 0):
+                cv2.putText(rgb_image, "Guesses: " + str(self.num_guesses-curr_guesses + 1), (int(frame.shape[1]-150),20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
             if curr_guesses == 0:
                 intro = rgb_image.copy()
                 cv2.putText(intro, "Welcome to FACIAL FRENZY", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
@@ -115,12 +117,12 @@ class EmotionGame():
                 cv2.waitKey(2000)
 
                 rules = rgb_image.copy()
-                cv2.putText(rules, "You have 10 seconds and 5 seconds to imitate the emotion!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.putText(rules, "You have 5 seconds to imitate the emotion :D", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(rules, cv2.COLOR_RGB2BGR))
                 cv2.waitKey(2000)
 
                 pts = rgb_image.copy()
-                cv2.putText(pts, "Making a face increases your score!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.putText(pts, "Making the correct face increases your score!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(pts, cv2.COLOR_RGB2BGR))
                 cv2.waitKey(2000)
 
@@ -180,6 +182,11 @@ class EmotionGame():
             cv2.imshow('window_frame', bgr_image)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+        ret, frame = video_capture.read()
+        conclude = frame.copy()
+        cv2.putText(conclude, "Thank you for playing!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        cv2.imshow('window_frame', conclude)
+        cv2.waitKey(2000)
         video_capture.release()
         cv2.destroyAllWindows()
 if __name__ == "__main__":
