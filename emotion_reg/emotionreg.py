@@ -35,6 +35,7 @@ class EmotionGame():
         self.time_limit = 5
         #self.total_time = 90
         self.num_guesses = 5
+        self.pictures = []
 
         self.emotion_score = {
             'neutral': 10,
@@ -113,6 +114,7 @@ class EmotionGame():
             if time.time() - start_time < self.time_limit:
                 end_emotion = self.emotion_detection(faces, gray_image, rgb_image)
             else:
+                self.pictures.append(bgr_image)
                 curr_guesses += 1
                 if curr_guesses > self.num_guesses:
                     break
