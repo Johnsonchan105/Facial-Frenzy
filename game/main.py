@@ -95,12 +95,8 @@ def post_face(user_id, image_data):
 
 
     files = { 'face': image_data }
-    
-    res = requests.post(endpoint, files=files)
 
-    content = res.json()
-
-    print(content, res.status_code)
+    _ = requests.post(endpoint, files=files)
 
 if __name__ == "__main__":
     print('THIS IS FACIAL FRENZY')
@@ -110,10 +106,10 @@ if __name__ == "__main__":
         print('PLEASE PLAY AGAIN')
         sys.exit()
     
-    # player_name = login_player()
+    player_name = login_player()
     
     # get the player obj from the db
-    player = get_player('Cap')
+    player = get_player(player_name)
 
     emo_game = EmotionGame()
     emo_game.run_game()
@@ -129,3 +125,5 @@ if __name__ == "__main__":
         img = compress_image(img)
         # Image.open(img).show()
         post_face(player['id'], img)
+
+    print('Your pictures have been uploaded! Check out your profile.')

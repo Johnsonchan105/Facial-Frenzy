@@ -113,7 +113,7 @@ def get_leaderboard():
     Get the leaderboard
     '''
     leaderboard = db_session.query(Players).order_by(Players.wins.desc())
-    return [[player.name, player.wins] for player in leaderboard]
+    return [[player.name, player.wins, f'/player/{player.user_id}'] for player in leaderboard]
 
 import firebase_admin
 from firebase_admin import credentials
