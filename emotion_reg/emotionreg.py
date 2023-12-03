@@ -117,17 +117,17 @@ class EmotionGame():
                 rules = rgb_image.copy()
                 cv2.putText(rules, "You have 10 seconds and 5 seconds to imitate the emotion!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(rules, cv2.COLOR_RGB2BGR))
-                cv2.waitKey(1500)
+                cv2.waitKey(2000)
 
                 pts = rgb_image.copy()
                 cv2.putText(pts, "Making a face increases your score!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(pts, cv2.COLOR_RGB2BGR))
-                cv2.waitKey(1500)
+                cv2.waitKey(2000)
 
                 highscore = rgb_image.copy()
                 cv2.putText(highscore, "And keep track of your high score online!", (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 cv2.imshow('window_frame', cv2.cvtColor(highscore, cv2.COLOR_RGB2BGR))
-                cv2.waitKey(1500)
+                cv2.waitKey(2000)
 
                 start = rgb_image.copy()
                 cv2.putText(start, "Now starting the game, your emotion is " + expected_emotion, (int(frame.shape[1] / 3), int(frame.shape[0] / 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
