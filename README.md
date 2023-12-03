@@ -13,11 +13,9 @@ Our vision for our Raspberry Pi expression game project is to create an engaging
 ## System requirements
 Install all python libraries in requirements.txt. Systems that are supported and software tools required for this project are listed below
 - System
-  - Windows 10 +
-  - Any Linux-based system
-  - Ubuntu 20+/ CentOS 7+
-  - Any system
-  - Docker container
+  - Windows 10+
+  - Ubuntu 20+
+  - Debian Linux Bullseye 11+
 - Software tools
   - python 3.10+
   - tensorflow 2.0+
