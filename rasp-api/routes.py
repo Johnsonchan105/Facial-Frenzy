@@ -137,7 +137,6 @@ def postface(user_id):
         utils.upload_image_to_firebase(file, storage_path)
         utils.add_player_image(user_id, storage_path)
         image = utils.download_image_from_firebase(storage_path)
-        image.show()
 
         return {'MESSAGE': f"Successfully uploaded player image"}, 200 
         
