@@ -32,7 +32,7 @@ class EmotionGame():
         self.highscore = 0
         self.score = 0
         self.level = 1
-        self.time_limit = 1
+        self.time_limit = 3
         #self.total_time = 90
         self.num_guesses = 3
         self.pictures = []
@@ -149,7 +149,7 @@ class EmotionGame():
             if time.time() - start_time < self.time_limit:
                 end_emotion = self.emotion_detection(faces, gray_image, rgb_image)
             else:
-                self.pictures.append(bgr_image)
+                self.pictures.append(rgb_image)
                 curr_guesses += 1
                 announce = rgb_image.copy()
                 text_position = (int(frame.shape[1] / 4), int(frame.shape[0] / 6))
