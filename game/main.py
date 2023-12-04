@@ -9,7 +9,7 @@ from emotion_reg.emotionreg import EmotionGame
 import asyncio
 from PIL import Image
 
-API_ENDPOINT = 'http://localhost:8000'
+API_ENDPOINT = 'http://169.231.155.196:8000' # 'http://localhost:8000'
 
 def compress_image(image_data, quality=85):
     """
