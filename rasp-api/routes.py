@@ -18,7 +18,7 @@ def hello():
     ''' 
     This route prints the welcome message using the myname variable passed in as an environment variable.
     '''
-    return f'Welcome to CS190B Sensors Hub from {myname}\n', 200
+    return f'Welcome to Facial Frenzy from {myname}\n', 200
 
 @app.route('/api/getplayer', methods=['GET'])
 def getplayer():
