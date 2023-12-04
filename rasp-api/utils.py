@@ -75,10 +75,10 @@ def add_player_image(user_id, path):
 
 def get_player_images_paths(user_id):
     '''
-    Get's top 5 images of player
+    Get's top 10 images of player
     '''
     try:
-        facials = db_session.query(Facial).filter(Facial.user_id == user_id).limit(5)
+        facials = db_session.query(Facial).filter(Facial.user_id == user_id).limit(10)
         facial_img_paths = [facial.img_path for facial in facials]
         return facial_img_paths
     except Exception as e:
