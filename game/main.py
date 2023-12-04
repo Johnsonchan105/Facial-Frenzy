@@ -51,7 +51,7 @@ def create_player(name):
 
     return content
 
-def get_player(name):
+def get_player(name, verbose=True):
 
     PATH = '/api/getplayer'
     endpoint = API_ENDPOINT + PATH
@@ -70,8 +70,8 @@ def get_player(name):
         res = requests.get(endpoint, json={'name': name})
 
         return res.json()
-    
-    print(f'WELCOME BACK {name}!')
+    if verbose:
+        print(f'WELCOME BACK {name}!')
     
     return content
 
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     score = emo_game.score
 
     update_score(player['id'], score)
-    print('Your new score is:', get_player(player['name'])['wins'])
+    print('Your new score is:', get_player(player['name'], verbose=False)['wins'])
 
     for image in emo_game.pictures:
         img = Image.fromarray(image)
