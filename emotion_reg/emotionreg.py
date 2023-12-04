@@ -34,7 +34,7 @@ class EmotionGame():
         self.level = 1
         self.time_limit = 3
         #self.total_time = 90
-        self.num_guesses = 3
+        self.num_guesses = 5
         self.pictures = []
 
         self.emotion_score = {
