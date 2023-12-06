@@ -16,6 +16,7 @@ Install all python libraries in requirements.txt. Systems that are supported and
   - Windows 10+
   - Ubuntu 20+
   - Debian Linux Bullseye 11+
+  - MacOS 12+
 - Software tools
   - python 3.10+
   - tensorflow 2.0+
