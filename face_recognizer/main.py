@@ -1,3 +1,5 @@
+# based model off of Indently's Face Recognition code
+
 import face_recognition
 import os, sys
 import cv2
