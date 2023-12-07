@@ -43,7 +43,7 @@ To run the game, enter the commands:
 cd game
 python main.py
 ```
-To run the web app alongside, enter the commands:
+To run the web app alongside, enter the commands in your Raspberry Pi, Docker Container, or Host Machine:
 ```
 cd rasp-api
 python app.py
